@@ -19,7 +19,7 @@ find-up () {
   echo "$path"
 }
 
-# Output name of current branch.
+# Output name of CURRENT_DIRt branch.
 git_current_branch() {
   local ref
   ref=$(command git symbolic-ref --quiet HEAD 2> /dev/null)
@@ -160,7 +160,7 @@ function _displayDefault() {
     setKey 4 "🔼 push" "git push origin $(git_current_branch)"
     setKey 5 "🔽 pull" "git pull origin $(git_current_branch)"
   else
-    clearKey 2
+    setKey 2 "👷 Working 👷" "cd ~/Job/Platzi/django/ && tmuxp load .tmuxp.yaml"
     clearKey 3
     clearKey 4
     clearKey 5
@@ -177,6 +177,23 @@ function _displayDefault() {
   else
       clearKey 6
   fi
+
+  # Makefile
+  # ------------
+  if [[ $(find-up Makefile) != "" ]]; then
+      setKey 7 "👷 Makefile" _displayMakefile '-q'
+  else
+      clearKey 7
+  fi
+
+  # tmuxp
+  # ------------
+  if [[ $(find-up .tmuxp.yaml) != "" ]]; then
+      setKey 8 "🏗 tmuxp" "tmuxp load .tmuxp.yaml"
+  else
+      clearKey 8
+  fi
+
 }
 
 function _displayNpmScripts() {
@@ -221,6 +238,21 @@ function _displayYarnScripts() {
   setKey 1 "👈 back" _displayDefault '-q'
 }
 
+function _displayMakefile() {
+
+  _clearTouchbar
+  _unbindTouchbar
+
+  touchBarState='makefile'
+
+  setKey 2 "build" "make build-docker-dev"
+  setKey 3 "up" "source start.sh"
+  setKey 4 "ssh" "make ssh-dev"
+  setKey 5 "stop" "make stop-dev"
+
+  setKey 1 "👈 back" _displayDefault '-q'
+}
+
 function _displayBranches() {
   # List of branches for current repo
   gitBranches=($(node -e "console.log('$(echo $(git branch))'.split(/[ ,]+/).toString().split(',').join(' ').toString().replace('* ', ''))"))
@@ -261,6 +293,7 @@ zle -N _displayNpmScripts
 zle -N _displayYarnScripts
 zle -N _displayBranches
 zle -N _displayPath
+zle -N _displayMakefile
 
 precmd_iterm_touchbar() {
   if [[ $touchBarState == 'npm' ]]; then
@@ -271,6 +304,8 @@ precmd_iterm_touchbar() {
     _displayBranches
   elif [[ $touchBarState == 'path' ]]; then
     _displayPath
+  elif [[ $touchBarState == 'makefile' ]]; then
+    _displayMakefile
   else
     _displayDefault
   fi
