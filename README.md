@@ -36,7 +36,9 @@ Currently it shows:
 Clone the repo in your plugins directory:
 
 * `$ cd ${ZSH_CUSTOM1:-$ZSH/custom}/plugins`
-* `$ git clone https://github.com/iam4x/zsh-iterm-touchbar.git`
+* `$ git clone https://github.com/ebar0n/zsh-iterm-touchbar.git`
+
+> Move to the branch: *ebar0n*
 
 Then add the plugin into your `~/.zshrc`:
 
